@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Keuangan Pribadi</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    margin: 0;
+    background: #f4f6f8;
+    color: #222;
+}
+
+.container {
+    width: 100%;
+    max-width: 650px;
+    margin: auto;
+    padding: 18px;
+}
+
+.header {
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+.header p {
+    margin: 6px 0 0;
+    color: #777;
+}
+
+.card {
+    background: white;
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+}
+
+.card h2 {
+    margin-top: 0;
+    font-size: 20px;
+}
+
+label {
+    display: block;
+    margin-top: 13px;
+    margin-bottom: 6px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 15px;
+    outline: none;
+}
+
+input:focus,
+select:focus {
+    border-color: #4a90e2;
+}
+
+.tambah {
+    width: 100%;
+    margin-top: 18px;
+    padding: 13px;
+    border: none;
+    border-radius: 10px;
+    background: #222;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.tambah:active {
+    transform: scale(0.98);
+}
+
+.periode {
+    background: #f0f4f8;
+    padding: 12px;
+    border-radius: 10px;
+    text-align: center;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.ringkasan {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.box {
+    padding: 15px;
+    border-radius: 12px;
+}
+
+.nama {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 7px;
+}
+
+.nilai {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.masuk {
+    background: #eaf8ef;
+    color: #159447;
+}
+
+.keluar {
+    background: #fdecec;
+    color: #d93636;
+}
+
+.sisa {
+    background: #eaf2ff;
+    color: #2878d4;
+}
+
+.hemat {
+    background: #eaf8ef;
+    color: #159447;
+}
+
+.boros {
+    background: #fdecec;
+    color: #d93636;
+}
+
+.status {
+    grid-column: 1 / -1;
+    background: #f5f5f5;
+    padding: 14px;
+    border-radius: 12px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.transaksi {
+    padding: 14px;
+    border-radius: 12px;
+    background: #fafafa;
+    margin-bottom: 10px;
+    border-left: 5px solid #999;
+}
+
+.transaksi.masuk-border {
+    border-left-color: #19a354;
+}
+
+.transaksi.keluar-border {
+    border-left-color: #e23b3b;
+}
+
+.transaksi-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tanggal {
+    font-size: 13px;
+    color: #777;
+}
+
+.jenis {
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.keterangan {
+    margin-top: 7px;
+    font-weight: bold;
+}
+
+.nominal {
+    margin-top: 7px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.hijau {
+    color: #159447;
+}
+
+.merah {
+    color: #d93636;
+}
+
+.hapus {
+    border: none;
+    background: #ffecec;
+    color: #d93636;
+    padding: 7px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.hapus:active {
+    transform: scale(0.95);
+}
+
+.kosong {
+    text-align: center;
+    color: #888;
+    padding: 20px 5px;
+}
+
+@media (max-width: 450px) {
+    .ringkasan {
+        grid-template-columns: 1fr;
+    }
+
+    .status {
+        grid-column: auto;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>Keuangan Pribadi</h1>
+        <p>Catat pemasukan dan pengeluaran</p>
+    </div>
+
+    <!-- FORM -->
+    <div class="card">
+
+        <h2>Tambah Transaksi</h2>
+
+        <label for="tanggal">Tanggal</label>
+        <input type="date" id="tanggal">
+
+        <label for="jenis">Jenis</label>
+        <select id="jenis">
+            <option value="pemasukan">Pemasukan</option>
+            <option value="pengeluaran">Pengeluaran</option>
+        </select>
+
+        <label for="nominal">Nominal</label>
+        <input
+            type="number"
+            id="nominal"
+            placeholder="Contoh: 10000"
+            min="1"
+        >
+
+        <label for="keterangan">Keterangan</label>
+        <input
+            type="text"
+            id="keterangan"
+            placeholder="Contoh: Uang saku"
+        >
+
+        <button class="tambah" onclick="tambahTransaksi()">
+            Tambah Transaksi
+        </button>
+
+    </div>
+
+
+    <!-- RINGKASAN -->
+    <div class="card">
+
+        <h2>Ringkasan Keuangan</h2>
+
+        <div class="periode" id="periode">
+            -
+        </div>
+
+        <div class="ringkasan">
+
+            <div class="box masuk">
+                <div class="nama">Pemasukan Hari Ini</div>
+                <div class="nilai" id="totalMasuk">
+                    Rp0
+                </div>
+            </div>
+
+            <div class="box keluar">
+                <div class="nama">Pengeluaran Hari Ini</div>
+                <div class="nilai" id="totalKeluar">
+                    Rp0
+                </div>
+            </div>
+
+            <div class="box sisa">
+                <div class="nama">Sisa Mingguan</div>
+                <div class="nilai" id="totalSisa">
+                    Rp0
+                </div>
+            </div>
+
+            <div class="box hemat">
+                <div class="nama">Hemat Mingguan</div>
+                <div class="nilai" id="persenHemat">
+                    0%
+                </div>
+            </div>
+
+            <div class="box boros">
+                <div class="nama">Pengeluaran Mingguan</div>
+                <div class="nilai" id="persenBoros">
+                    0%
+                </div>
+            </div>
+
+            <div class="status" id="status">
+                Belum ada transaksi
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- RIWAYAT -->
+    <div class="card">
+
+        <h2>Riwayat Transaksi</h2>
+
+        <div id="riwayat"></div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+var DATA_KEY = "keuangan_andez_reset";
+
+var transaksi = [];
+
+var AWAL_MINGGU = new Date(2026, 8, 27);
+
+
+/* =========================
+   LOAD DATA
+========================= */
+
+function loadData() {
+
+    var data = localStorage.getItem(DATA_KEY);
+
+    if (data) {
+
+        try {
+
+            transaksi = JSON.parse(data);
+
+            if (!Array.isArray(transaksi)) {
+                transaksi = [];
+            }
+
+        } catch (error) {
+
+            transaksi = [];
+
+        }
+
+    } else {
+
+        transaksi = [];
+
+    }
+
+}
+
+
+/* =========================
+   SAVE DATA
+========================= */
+
+function saveData() {
+
+    localStorage.setItem(
+        DATA_KEY,
+        JSON.stringify(transaksi)
+    );
+
+}
+
+
+/* =========================
+   FORMAT RUPIAH
+========================= */
+
+function rupiah(angka) {
+
+    return "Rp" +
+        Number(angka).toLocaleString("id-ID");
+
+}
+
+
+/* =========================
+   TANGGAL REAL-TIME
+========================= */
+
+function tanggalHariIni() {
+
+    var sekarang = new Date();
+
+    var tahun =
+        sekarang.getFullYear();
+
+    var bulan =
+        String(
+            sekarang.getMonth() + 1
+        ).padStart(2, "0");
+
+    var hari =
+        String(
+            sekarang.getDate()
+        ).padStart(2, "0");
+
+    return tahun + "-" + bulan + "-" + hari;
+
+}
+
+
+/* =========================
+   INFO MINGGU
+========================= */
+
+function infoMinggu(tanggal) {
+
+    if (!tanggal) {
+        return null;
+    }
+
+    var tanggalObj =
+        new Date(tanggal + "T00:00:00");
+
+    var selisih =
+        Math.floor(
+            (tanggalObj - AWAL_MINGGU) /
+            86400000
+        );
+
+    var blok =
+        Math.floor(selisih / 7);
+
+    var siklus =
+        [4, 1, 2, 3];
+
+    var index =
+        ((blok % 4) + 4) % 4;
+
+    var nomor =
+        siklus[index];
+
+    return {
+        blok: blok,
+        nomor: nomor
+    };
+
+}
+
+
+/* =========================
+   TAMPILKAN PERIODE
+========================= */
+
+function tampilkanPeriode() {
+
+    var tanggal =
+        document.getElementById("tanggal").value;
+
+    if (!tanggal) {
+        return;
+    }
+
+    var info =
+        infoMinggu(tanggal);
+
+    var awal =
+        new Date(AWAL_MINGGU);
+
+    awal.setDate(
+        awal.getDate() +
+        (info.blok * 7)
+    );
+
+    var akhir =
+        new Date(awal);
+
+    akhir.setDate(
+        akhir.getDate() + 6
+    );
+
+
+    function formatTanggal(tgl) {
+
+        var hari =
+            String(
+                tgl.getDate()
+            ).padStart(2, "0");
+
+        var bulan =
+            String(
+                tgl.getMonth() + 1
+            ).padStart(2, "0");
+
+        var tahun =
+            tgl.getFullYear();
+
+        return (
+            hari +
+            "/" +
+            bulan +
+            "/" +
+            tahun
+        );
+
+    }
+
+
+    document.getElementById("periode").innerText =
+        "Minggu " +
+        info.nomor +
+        " • " +
+        formatTanggal(awal) +
+        " - " +
+        formatTanggal(akhir);
+
+}
+
+
+/* =========================
+   HITUNG RINGKASAN
+========================= */
+
+function hitungRingkasan() {
+
+    var tanggalDipilih =
+        document.getElementById("tanggal").value;
+
+    if (!tanggalDipilih) {
+        return;
+    }
+
+    var mingguTerpilih =
+        infoMinggu(tanggalDipilih);
+
+
+    /* PEMASUKAN DAN PENGELUARAN HARIAN */
+
+    var pemasukanHari = 0;
+
+    var pengeluaranHari = 0;
+
+
+    transaksi.forEach(function(item) {
+
+        if (item.tanggal === tanggalDipilih) {
+
+            if (item.jenis === "pemasukan") {
+
+                pemasukanHari +=
+                    Number(item.nominal);
+
+            }
+
+            if (item.jenis === "pengeluaran") {
+
+                pengeluaranHari +=
+                    Number(item.nominal);
+
+            }
+
+        }
+
+    });
+
+
+    /* TOTAL MINGGUAN */
+
+    var pemasukanMinggu = 0;
+
+    var pengeluaranMinggu = 0;
+
+
+    transaksi.forEach(function(item) {
+
+        var infoData =
+            infoMinggu(item.tanggal);
+
+        if (
+            infoData &&
+            infoData.blok === mingguTerpilih.blok
+        ) {
+
+            if (item.jenis === "pemasukan") {
+
+                pemasukanMinggu +=
+                    Number(item.nominal);
+
+            }
+
+            if (item.jenis === "pengeluaran") {
+
+                pengeluaranMinggu +=
+                    Number(item.nominal);
+
+            }
+
+        }
+
+    });
+
+
+    /* SISA */
+
+    var sisa =
+        pemasukanMinggu -
+        pengeluaranMinggu;
+
+
+    /* BOROS */
+
+    var boros = 0;
+
+    if (pemasukanMinggu > 0) {
+
+        boros =
+            (
+                pengeluaranMinggu /
+                pemasukanMinggu
+            ) * 100;
+
+    }
+
+
+    /* HEMAT */
+
+    var hemat = 0;
+
+    if (pemasukanMinggu > 0) {
+
+        hemat =
+            (
+                sisa /
+                pemasukanMinggu
+            ) * 100;
+
+        if (hemat < 0) {
+            hemat = 0;
+        }
+
+    }
+
+
+    document.getElementById("totalMasuk").innerText =
+        rupiah(pemasukanHari);
+
+    document.getElementById("totalKeluar").innerText =
+        rupiah(pengeluaranHari);
+
+    document.getElementById("totalSisa").innerText =
+        rupiah(sisa);
+
+    document.getElementById("persenHemat").innerText =
+        hemat.toFixed(1) + "%";
+
+    document.getElementById("persenBoros").innerText =
+        boros.toFixed(1) + "%";
+
+
+    /* STATUS */
+
+    var status =
+        document.getElementById("status");
+
+
+    if (
+        pemasukanMinggu === 0 &&
+        pengeluaranMinggu === 0
+    ) {
+
+        status.innerText =
+            "Belum ada transaksi";
+
+    } else if (
+        pemasukanMinggu > 0 &&
+        pengeluaranMinggu === 0
+    ) {
+
+        status.innerText =
+            "Belum ada pengeluaran";
+
+    } else if (boros <= 50) {
+
+        status.innerText =
+            "Pengeluaran masih terkendali";
+
+    } else if (boros <= 80) {
+
+        status.innerText =
+            "Pengeluaran mulai meningkat";
+
+    } else if (boros <= 100) {
+
+        status.innerText =
+            "Pengeluaran cukup tinggi";
+
+    } else {
+
+        status.innerText =
+            "Pengeluaran melebihi pemasukan";
+
+    }
+
+}
+
+
+/* =========================
+   TAMPILKAN RIWAYAT
+========================= */
+
+function tampilkanRiwayat() {
+
+    var area =
+        document.getElementById("riwayat");
+
+
+    if (transaksi.length === 0) {
+
+        area.innerHTML =
+            '<div class="kosong">' +
+            'Belum ada transaksi.' +
+            '</div>';
+
+        return;
+
+    }
+
+
+    var data =
+        transaksi.slice().sort(
+            function(a, b) {
+
+                if (a.tanggal === b.tanggal) {
+
+                    return b.id - a.id;
+
+                }
+
+                return b.tanggal.localeCompare(
+                    a.tanggal
+                );
+
+            }
+        );
+
+
+    area.innerHTML = "";
+
+
+    data.forEach(function(item) {
+
+        var div =
+            document.createElement("div");
+
+
+        div.className =
+            "transaksi " +
+            (
+                item.jenis === "pemasukan"
+                ? "masuk-border"
+                : "keluar-border"
+            );
+
+
+        var tanda =
+            item.jenis === "pemasukan"
+            ? "+"
+            : "-";
+
+
+        var warna =
+            item.jenis === "pemasukan"
+            ? "hijau"
+            : "merah";
+
+
+        var namaJenis =
+            item.jenis === "pemasukan"
+            ? "Pemasukan"
+            : "Pengeluaran";
+
+
+        div.innerHTML =
+
+            '<div class="transaksi-header">' +
+
+                '<div>' +
+
+                    '<div class="jenis">' +
+                        namaJenis +
+                    '</div>' +
+
+                    '<div class="tanggal">' +
+                        item.tanggal +
+                    '</div>' +
+
+                '</div>' +
+
+                '<button ' +
+                    'class="hapus" ' +
+                    'onclick="hapusTransaksi(' +
+                    item.id +
+                    ')">' +
+                    'Hapus' +
+                '</button>' +
+
+            '</div>' +
+
+            '<div class="keterangan">' +
+                item.keterangan +
+            '</div>' +
+
+            '<div class="nominal ' +
+                warna +
+            '">' +
+
+                tanda +
+                rupiah(item.nominal) +
+
+            '</div>';
+
+
+        area.appendChild(div);
+
+    });
+
+}
+
+
+/* =========================
+   TAMBAH TRANSAKSI
+========================= */
+
+function tambahTransaksi() {
+
+    var tanggal =
+        document.getElementById("tanggal").value;
+
+    var jenis =
+        document.getElementById("jenis").value;
+
+    var nominal =
+        Number(
+            document.getElementById("nominal").value
+        );
+
+    var keterangan =
+        document
+        .getElementById("keterangan")
+        .value
+        .trim();
+
+
+    if (!tanggal) {
+
+        alert(
+            "Pilih tanggal terlebih dahulu."
+        );
+
+        return;
+    }
+
+
+    if (!nominal || nominal <= 0) {
+
+        alert(
+            "Masukkan nominal yang valid."
+        );
+
+        return;
+    }
+
+
+    if (!keterangan) {
+
+        keterangan =
+            "Tanpa keterangan";
+
+    }
+
+
+    var dataBaru = {
+
+        id: Date.now(),
+
+        tanggal: tanggal,
+
+        jenis: jenis,
+
+        nominal: nominal,
+
+        keterangan: keterangan
+
+    };
+
+
+    transaksi.push(dataBaru);
+
+    saveData();
+
+    tampilkanPeriode();
+
+    hitungRingkasan();
+
+    tampilkanRiwayat();
+
+
+    document.getElementById("nominal").value =
+        "";
+
+    document.getElementById("keterangan").value =
+        "";
+
+}
+
+
+/* =========================
+   HAPUS TRANSAKSI
+========================= */
+
+function hapusTransaksi(id) {
+
+    var yakin =
+        confirm(
+            "Hapus transaksi ini?"
+        );
+
+
+    if (!yakin) {
+        return;
+    }
+
+
+    transaksi =
+        transaksi.filter(
+            function(item) {
+
+                return String(item.id) !==
+                    String(id);
+
+            }
+        );
+
+
+    saveData();
+
+    tampilkanRiwayat();
+
+    hitungRingkasan();
+
+}
+
+
+/* =========================
+   EVENT GANTI TANGGAL
+========================= */
+
+document
+    .getElementById("tanggal")
+    .addEventListener(
+        "change",
+        function() {
+
+            tampilkanPeriode();
+
+            hitungRingkasan();
+
+        }
+    );
+
+
+/* =========================
+   SAAT HALAMAN DIBUKA
+========================= */
+
+loadData();
+
+
+/* Gunakan tanggal real-time perangkat */
+
+document.getElementById("tanggal").value =
+    tanggalHariIni();
+
+
+tampilkanPeriode();
+
+hitungRingkasan();
+
+tampilkanRiwayat();
+
+
+/* =========================
+   CEK TANGGAL SAAT APLIKASI
+   KEMBALI DIBUKA
+========================= */
+
+document.addEventListener(
+    "visibilitychange",
+    function() {
+
+        if (
+            document.visibilityState ===
+            "visible"
+        ) {
+
+            var tanggalSekarang =
+                tanggalHariIni();
+
+            var inputTanggal =
+                document.getElementById(
+                    "tanggal"
+                );
+
+            /*
+             * Hanya otomatis mengganti
+             * jika sebelumnya tanggal
+             * adalah tanggal real-time.
+             */
+
+            if (
+                inputTanggal.value !==
+                tanggalSekarang
+            ) {
+
+                inputTanggal.value =
+                    tanggalSekarang;
+
+                tampilkanPeriode();
+
+                hitungRingkasan();
+
+            }
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>
